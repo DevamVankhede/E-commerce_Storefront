@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { z } from "zod";
+import { useAuth } from "@/context/AuthProvider"; // Corrected import path
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -17,6 +18,7 @@ export default function SignupPage() {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
+  const { login } = useAuth(); // Added useAuth hook
 
   const schema = z
     .object({
@@ -57,13 +59,80 @@ export default function SignupPage() {
       return;
     }
 
-    // Here you would typically make an API call to register the user
-    // For now, we'll just simulate a successful signup
+    const BASE_URL = "https://saleor.kombee.co.in";
+    const mutation = `mutation AccountRegister($email: String!, $password: String!) {
+      accountRegister(input: { email: $email, password: $password }) {
+        user { email }
+        errors { field message }
+      }
+    }`;
+
+    setSubmitting(true);
+
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-      // In a real application, you'd handle the API response here
-      console.log("Signup successful:", { email });
-      router.push("/login?signupSuccess=true");
+      const response = await fetch(`${BASE_URL}/graphql/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Saleor-API-Url": BASE_URL,
+        },
+        body: JSON.stringify({
+          query: mutation,
+          variables: { email, password },
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(
+          errorData.errors?.[0]?.message || "Signup failed. Please try again."
+        );
+      }
+
+      const data = await response.json();
+      const user = data.data.accountRegister.user;
+      const errors = data.data.accountRegister.errors;
+
+      if (user) {
+        console.log("Signup successful:", { email });
+        // Automatically log in the user after successful registration
+        const loginMutation = `mutation TokenCreate($email: String!, $password: String!) {
+          tokenCreate(email: $email, password: $password) {
+            token
+            user { email }
+            errors { field message }
+          }
+        }`;
+
+        const loginResponse = await fetch(`${BASE_URL}/graphql/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: loginMutation,
+            variables: { email, password },
+          }),
+        });
+
+        const loginData = await loginResponse.json();
+        const loginResult = loginData?.data?.tokenCreate;
+        const token: string | undefined = loginResult?.token;
+        const loginErrors: Array<{ field?: string; message: string }> =
+          loginResult?.errors ?? [];
+
+        if (token && loginResult?.user?.email) {
+          login(token, loginResult.user.email.split("@")[0]); // Using email prefix as username
+          router.push("/products");
+        } else {
+          setFormError(
+            loginErrors?.[0]?.message ||
+              "Automatic login failed after registration. Please try to log in manually."
+          );
+        }
+      } else {
+        throw new Error(
+          errors?.[0]?.message || "Signup failed. Please try again."
+        );
+      }
     } catch (error: unknown) {
       setFormError(
         (error instanceof Error
