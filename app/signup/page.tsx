@@ -43,7 +43,11 @@ export default function SignupPage() {
 
     const parseResult = schema.safeParse({ email, password, confirmPassword });
     if (!parseResult.success) {
-      const fieldErrors: { email?: string; password?: string; confirmPassword?: string } = {};
+      const fieldErrors: {
+        email?: string;
+        password?: string;
+        confirmPassword?: string;
+      } = {};
       for (const issue of parseResult.error.issues) {
         const key = issue.path[0] as "email" | "password" | "confirmPassword";
         if (!fieldErrors[key]) fieldErrors[key] = issue.message;
@@ -60,8 +64,12 @@ export default function SignupPage() {
       // In a real application, you'd handle the API response here
       console.log("Signup successful:", { email });
       router.push("/login?signupSuccess=true");
-    } catch (error: any) {
-      setFormError(error.message || "Signup failed. Please try again.");
+    } catch (error: unknown) {
+      setFormError(
+        (error instanceof Error
+          ? error.message
+          : "An unknown error occurred") || "Signup failed. Please try again."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -82,7 +90,12 @@ export default function SignupPage() {
         )}
 
         <div className="mb-4">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
+            Email
+          </label>
           <input
             type="email"
             id="email"
@@ -102,7 +115,12 @@ export default function SignupPage() {
         </div>
 
         <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
+            Password
+          </label>
           <input
             type="password"
             id="password"
@@ -122,7 +140,12 @@ export default function SignupPage() {
         </div>
 
         <div className="mb-6">
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+          >
+            Confirm Password
+          </label>
           <input
             type="password"
             id="confirmPassword"
@@ -131,7 +154,9 @@ export default function SignupPage() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             aria-invalid={!!errors.confirmPassword}
-            aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+            aria-describedby={
+              errors.confirmPassword ? "confirmPassword-error" : undefined
+            }
             disabled={submitting}
           />
           {errors.confirmPassword && (
@@ -151,7 +176,10 @@ export default function SignupPage() {
 
         <p className="text-center text-sm text-gray-600 dark:text-gray-400 mt-6">
           Already have an account?{" "}
-          <Link href="/login" className="text-emerald-600 hover:underline dark:text-emerald-400">
+          <Link
+            href="/login"
+            className="text-emerald-600 hover:underline dark:text-emerald-400"
+          >
             Log In
           </Link>
         </p>

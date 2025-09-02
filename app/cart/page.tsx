@@ -2,6 +2,7 @@
 "use client";
 import { useCart } from "../../context/CartContext";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function CartPage() {
   const { items, updateQty, removeItem, total } = useCart();
@@ -26,9 +27,11 @@ export default function CartPage() {
             className="flex items-center justify-between bg-gray-400 p-3 rounded shadow"
           >
             <div className="flex text-black items-center gap-3">
-              <img
-                src={it.image}
+              <Image
+                src={it.image || "/file.svg"}
                 alt={it.title}
+                width={64}
+                height={64}
                 className="w-16 h-16 object-cover"
               />
               <div>

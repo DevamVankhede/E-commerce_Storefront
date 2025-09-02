@@ -18,9 +18,14 @@ async function fetchProduct(id: string) {
   if (typeof p.description === "string") {
     try {
       const descObj = JSON.parse(p.description);
+      interface DescriptionBlock {
+        data?: {
+          text?: string;
+        };
+      }
       if (descObj && Array.isArray(descObj.blocks)) {
         parsedDescription = descObj.blocks
-          .map((b: any) =>
+          .map((b: DescriptionBlock) =>
             typeof b?.data?.text === "string" ? b.data.text : ""
           )
           .filter(Boolean)

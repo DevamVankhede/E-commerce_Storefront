@@ -36,34 +36,34 @@ export default function Footer() {
           </Link>
         </div>
         <div className="flex space-x-6">
-          <a
+          <Link
             href="/"
             className="text-gray-400 hover:text-emerald-400 transition-colors duration-300"
             aria-label="Facebook"
           >
             <Globe className="w-6 h-6" />
-          </a>
-          <a
+          </Link>
+          <Link
             href="/"
             className="text-gray-400 hover:text-emerald-400 transition-colors duration-300"
             aria-label="Twitter"
           >
             <Globe className="w-6 h-6" />
-          </a>
-          <a
+          </Link>
+          <Link
             href="/"
             className="text-gray-400 hover:text-emerald-400 transition-colors duration-300"
             aria-label="Instagram"
           >
             <Globe className="w-6 h-6" />
-          </a>
-          <a
+          </Link>
+          <Link
             href="/"
             className="text-gray-400 hover:text-emerald-400 transition-colors duration-300"
             aria-label="LinkedIn"
           >
             <Globe className="w-6 h-6" />
-          </a>
+          </Link>
         </div>
       </div>
     </footer>

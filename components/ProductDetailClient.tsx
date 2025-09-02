@@ -1,5 +1,6 @@
 "use client";
 import { useCart } from "@/context/CartContext";
+import Image from "next/image";
 
 type Product = {
   id: string;
@@ -21,9 +22,11 @@ export default function ProductDetailClient({
       <div className="flex flex-col md:flex-row gap-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-10">
         {/* Product Image */}
         <div className="md:w-1/2 relative aspect-square bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden flex items-center justify-center">
-          <img
+          <Image
             src={product.image || "/file.svg"}
             alt={product.title}
+            width={500} // Assuming a reasonable default width
+            height={500} // Assuming a reasonable default height
             className="max-h-full max-w-full object-contain p-4"
             loading="eager"
           />
